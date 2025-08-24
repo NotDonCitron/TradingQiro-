@@ -1,0 +1,9 @@
+# Netscape HTTP Cookie File
+# https://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file! Do not edit.
+
+cryptet.com	FALSE	/	FALSE	1788190239	cid	333559839507
+.cryptet.com	TRUE	/	FALSE	1790559992.289	_ga_2N57ETL78L	GS2.1.s1755998656$o38$g1$t1755999992$j60$l0$h0
+.cryptet.com	TRUE	/	FALSE	1790559992.289	_ga	GA1.1.62887847.1753630240
+cryptet.com	FALSE	/	FALSE	0	PHPSESSID	m7kgqk1mlrgtlk3mr2v7m3othm
+cryptet.com	FALSE	/	FALSE	1757208259.517	remember_me	24876%3A9f5440f900c1eacc3faca29eb9461b8b186ffa2e18a4c701c1bfdcdfc7c616fe%3A5293c64d1bb4679ff11adfe8bf6dcefbaca4ed75fce543b3a57817d76213522d

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}-trading-bot"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: trading-bot
+  template:
+    metadata:
+      labels:
+        app: trading-bot
+    spec:
+      containers:
+        - name: trading-bot
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          env:
+            - name: TRADING_ENABLED
+              value: {{ .Values.env.TRADING_ENABLED | quote }}
+            - name: BINGX_TESTNET
+              value: {{ .Values.env.BINGX_TESTNET | quote }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: trading-bot-secrets
+                  key: database_url
+            - name: TELEGRAM_API_ID
+              valueFrom:
+                secretKeyRef:
+                  name: trading-bot-secrets
+                  key: telegram_api_id
+            - name: TELEGRAM_API_HASH
+              valueFrom:
+                secretKeyRef:
+                  name: trading-bot-secrets
+                  key: telegram_api_hash
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: trading-bot-secrets
+                  key: telegram_bot_token
+            - name: BINGX_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: trading-bot-secrets
+                  key: bingx_api_key
+            - name: BINGX_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: trading-bot-secrets
+                  key: bingx_secret_key
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
