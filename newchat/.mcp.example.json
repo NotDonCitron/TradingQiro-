@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "cycode": {
+      "type": "docker" 
+    },
+    "semgrep": {
+      "type": "local",
+      "config": {
+        "rules": "https://semgrep.dev/r/python-security",
+        "output_format": "json"
+      }
+    },
+    "docker-mcp-toolkit": {
+      "type": "local",
+      "config": {
+        "tools": ["stripe", "elastic", "neo4j"],
+        "secure_runtime": true
+      }
+    },
+    "sonarqube": {
+      "type": "http",
+      "url": "http://localhost:9000",
+      "config": {
+        "project_key": "python-docker-project"
+      }
+    },
+    "betterscan": {
+      "type": "docker"
+    }
+  }
+}

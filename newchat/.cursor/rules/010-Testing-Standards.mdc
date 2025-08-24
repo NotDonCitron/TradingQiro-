@@ -1,0 +1,16 @@
+---
+name: Testing Best Practices
+description: Ensure comprehensive test coverage with edge cases.
+globs:
+  - "tests/**/*.py"
+triggers:
+  - file_change
+---
+- Decke Erfolg-, Fehlschlag- und Edge-Cases ab (z. B. null inputs, boundaries in test_end_to_end_flow.py).
+- Nutze sinnvolle Assertions (z. B. assertEqual statt assert True); vermeide breite Checks.
+- Strukturiere Tests: Separate Files für Unit/Integration (z. B. test_signal_parsing.py).
+- Ziel: 80% Coverage; integriere pytest mit Coverage-Report in CI.
+- Handle Errors: Test für Race Conditions und Concurrency (z. B. in health_monitor.py).
+- Dokumentiere: Füge Docstrings mit Beispielen hinzu; erweitere README mit Test-Richtlinien.
+- Für UI-Tests: Konsistente Naming in test-ui-puppeteer.js; check i18n-Übersetzungen.
+- Trigger: Bei Änderungen in Tests – erinnere an Edge-Case-Addition.

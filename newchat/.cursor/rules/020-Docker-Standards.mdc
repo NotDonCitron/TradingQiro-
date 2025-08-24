@@ -1,0 +1,17 @@
+---
+name: Docker and Deployment Standards
+description: Enforce reproducible and secure Docker setups.
+globs:
+  - "**/Dockerfile*"
+  - "**/docker-compose.yml"
+alwaysApply: false
+---
+- Dokumentiere Ports/Netzwerke vollständig (z. B. in docker-compose.yml: expose 8000 für WebUI).
+- Keine Secrets in Images/Logs; übergebe via Env Vars oder Volumes (z. B. --env-file .env).
+- Nutze Multi-Stage Builds für Optimierung (z. B. in Dockerfile.webui).
+- Trenne dev/prod: Defaults in docker-compose.yml, Overrides in .env.
+- Teste Deployments: Integriere Health-Checks (z. B. health_check.ps1) in Compose.
+- Härtung: Minimiere Images, scanne auf Vulnerabilities (z. B. mit Trivy in CI).
+- Dokumentiere in DEPLOYMENT.md: "Reproduzierbar via start_with_docker.bat".
+- Trigger: Wenn Agent Docker-Changes erkennt – schlage Härtungs-Verbesserungen vor.
+- Beispiel: ENTRYPOINT ["python", "app.py"] für sichere Starts.

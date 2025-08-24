@@ -1,0 +1,27 @@
+# Environment
+.env
+.env.local
+*.env
+secrets.enc
+
+# Cursor/Editor
+.cursor/cache/
+.cursor/tmp/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache/
+.mypy_cache/
+
+# Docker artifacts
+*.backup
+*.corrupted
+
+# Logs
+*.log
+
+# Uploads / temp
+Uploads/
