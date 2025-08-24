@@ -1,0 +1,132 @@
+version: '3.8'
+
+# =============================================================================
+# MESSAGE QUEUE ARCHITECTURE - PROFESSIONAL SIGNAL FORWARDING
+# Nutzt RabbitMQ für robuste Message-Verarbeitung
+# =============================================================================
+
+services:
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: trading-bot-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-admin123}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  # PostgreSQL für Persistent Storage
+  postgres:
+    image: postgres:15-alpine
+    container_name: trading-bot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-trading}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trading123}
+      POSTGRES_DB: ${POSTGRES_DB:-trading_bot}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trading}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Telegram Webhook Receiver (nginx + FastAPI)
+  webhook-receiver:
+    build:
+      context: .
+      dockerfile: Dockerfile.webhook-receiver
+    container_name: webhook-receiver
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin123}@rabbitmq:5672/
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-your-secret-key}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - trading-network
+
+  # Signal Processing Worker
+  signal-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.signal-worker
+    container_name: signal-worker
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin123}@rabbitmq:5672/
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-trading}:${POSTGRES_PASSWORD:-trading123}@postgres:5432/${POSTGRES_DB:-trading_bot}
+      - LOG_LEVEL=INFO
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - trading-network
+    # Horizontal Scaling möglich
+    deploy:
+      replicas: 2
+
+  # Telegram Forwarder Worker
+  forwarder-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.forwarder-worker
+    container_name: forwarder-worker
+    restart: unless-stopped
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - OWN_GROUP_CHAT_ID=${OWN_GROUP_CHAT_ID}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin123}@rabbitmq:5672/
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-trading}:${POSTGRES_PASSWORD:-trading123}@postgres:5432/${POSTGRES_DB:-trading_bot}
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - trading-network
+
+  # Monitoring & Admin Dashboard
+  admin-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin-dashboard
+    container_name: admin-dashboard
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-trading}:${POSTGRES_PASSWORD:-trading123}@postgres:5432/${POSTGRES_DB:-trading_bot}
+      - RABBITMQ_MANAGEMENT_URL=http://rabbitmq:15672
+      - RABBITMQ_USER=${RABBITMQ_USER:-admin}
+      - RABBITMQ_PASS=${RABBITMQ_PASS:-admin123}
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - trading-network
+
+networks:
+  trading-network:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
+    driver: local
+  postgres_data:
+    driver: local

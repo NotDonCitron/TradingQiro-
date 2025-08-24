@@ -1,0 +1,5 @@
+# Requirements für Telegram Receiver Service
+telethon>=1.30.0
+redis>=5.0.0
+python-dotenv>=1.0.0
+asyncio-mqtt>=0.11.0

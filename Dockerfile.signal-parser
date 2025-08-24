@@ -1,0 +1,31 @@
+FROM python:3.11-slim
+
+# Install minimal dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r parser \
+    && useradd -r -g parser parser
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.signal-parser.txt .
+RUN pip install --no-cache-dir -r requirements.signal-parser.txt
+
+# Copy source code
+COPY ./services/signal_parser.py ./
+COPY ./src/utils/ ./src/utils/
+
+# Create health check script
+COPY ./services/health_check_parser.py ./
+
+# Set ownership
+RUN chown -R parser:parser /app
+USER parser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD python health_check_parser.py || exit 1
+
+CMD ["python", "signal_parser.py"]

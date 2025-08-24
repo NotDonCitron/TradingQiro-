@@ -1,0 +1,30 @@
+FROM python:3.11-slim
+
+# Install minimal dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r telegram \
+    && useradd -r -g telegram telegram
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.telegram-receiver.txt .
+RUN pip install --no-cache-dir -r requirements.telegram-receiver.txt
+
+# Copy source code
+COPY ./src/connectors/telethon_connector.py ./src/connectors/
+COPY ./src/utils/ ./src/utils/
+COPY ./services/telegram_receiver.py ./
+COPY ./services/health_check.py ./
+
+# Set ownership
+RUN chown -R telegram:telegram /app
+USER telegram
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD python health_check.py || exit 1
+
+CMD ["python", "telegram_receiver.py"]

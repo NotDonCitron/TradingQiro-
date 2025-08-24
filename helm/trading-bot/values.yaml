@@ -1,0 +1,24 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/myorg/trading-bot
+  pullPolicy: IfNotPresent
+  tag: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  TRADING_ENABLED: "false"
+  BINGX_TESTNET: "true"
+  LOG_LEVEL: "INFO"
+
+secrets:
+  # Values will be taken from Kubernetes secrets
+  telegram_api_id: ""
+  telegram_api_hash: ""
+  telegram_bot_token: ""
+  database_url: ""
+  bingx_api_key: ""
+  bingx_secret_key: ""

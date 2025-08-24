@@ -1,0 +1,111 @@
+groups:
+  - name: trading_bot_alerts
+    rules:
+      # Trading Bot Health
+      - alert: TradingBotDown
+        expr: up{job="trading-bot"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Trading Bot ist offline"
+          description: "Der Trading Bot ist seit {{ $value }}s nicht erreichbar"
+
+      # Signal Processing
+      - alert: HighSignalProcessingLatency
+        expr: signal_processing_duration_seconds > 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Hohe Signal-Verarbeitungszeit"
+          description: "Signal-Verarbeitung dauert {{ $value }}s (Schwellwert: 5s)"
+
+      - alert: SignalProcessingErrors
+        expr: increase(signal_processing_errors_total[5m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Viele Signal-Verarbeitungsfehler"
+          description: "{{ $value }} Signal-Fehler in den letzten 5 Minuten"
+
+      # Trading Operations
+      - alert: TradingErrors
+        expr: increase(trading_errors_total[5m]) > 3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Trading-Fehler erkannt"
+          description: "{{ $value }} Trading-Fehler in den letzten 5 Minuten"
+
+      - alert: NoTradingActivity
+        expr: increase(signals_processed_total[10m]) == 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Keine Trading-Aktivität"
+          description: "Keine Signale in den letzten 10 Minuten verarbeitet"
+
+      # System Resources
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{name="trading-bot-production"} / container_spec_memory_limit_bytes{name="trading-bot-production"} > 0.9
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Hoher Speicherverbrauch"
+          description: "Trading Bot verwendet {{ $value | humanizePercentage }} des verfügbaren Speichers"
+
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total{name="trading-bot-production"}[5m]) > 0.8
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Hohe CPU-Auslastung"
+          description: "Trading Bot CPU-Auslastung: {{ $value | humanizePercentage }}"
+
+  - name: cryptet_alerts
+    rules:
+      # Cryptet Scraping
+      - alert: CryptetScrapingFailed
+        expr: increase(cryptet_scraping_errors_total[5m]) > 3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Cryptet Scraping-Fehler"
+          description: "{{ $value }} Cryptet Scraping-Fehler in den letzten 5 Minuten"
+
+      - alert: CryptetSignalDelay
+        expr: time() - cryptet_last_signal_timestamp > 3600
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Lange Zeit seit letztem Cryptet Signal"
+          description: "Letztes Cryptet Signal vor {{ $value }}s"
+
+  - name: telegram_alerts
+    rules:
+      # Telegram Connection
+      - alert: TelegramConnectionLost
+        expr: telegram_connection_status == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Telegram-Verbindung verloren"
+          description: "Telegram-Verbindung ist seit {{ $value }}s unterbrochen"
+
+      - alert: TelegramMessageErrors
+        expr: increase(telegram_message_errors_total[5m]) > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Telegram Nachrichten-Fehler"
+          description: "{{ $value }} Telegram-Fehler in den letzten 5 Minuten"

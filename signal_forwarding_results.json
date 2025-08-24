@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-08-24T15:50:36.362728",
+  "session_used": "signal_forwarding_test.session",
+  "groups": {
+    "-1002299206473": {
+      "accessible": true,
+      "title": "VIP Club",
+      "messages": 10,
+      "signals": 8
+    },
+    "-1001804143400": {
+      "accessible": true,
+      "title": "CryptET",
+      "messages": 10,
+      "signals": 10
+    },
+    "-1002773853382": {
+      "accessible": true,
+      "title": "PH FUTURES VIP",
+      "messages": 10,
+      "signals": 10
+    }
+  },
+  "test_signals_sent": 2,
+  "summary": {
+    "all_groups_accessible": true,
+    "vip_group_ok": true,
+    "cryptet_channel_ok": true,
+    "target_group_ok": true
+  }
+}

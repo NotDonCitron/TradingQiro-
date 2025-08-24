@@ -1,0 +1,106 @@
+version: '3.8'
+
+# =============================================================================
+# DOCKER SERVICES - SIGNAL FORWARDING ARCHITECTURE
+# Trennt Signal-Verarbeitung in separate Services
+# =============================================================================
+
+services:
+  # Redis Message Queue für Inter-Service Communication
+  redis:
+    image: redis:7-alpine
+    container_name: trading-bot-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - trading-network
+
+  # Telegram Signal Receiver - Empfängt Nachrichten
+  telegram-receiver:
+    build:
+      context: .
+      dockerfile: Dockerfile.telegram-receiver
+    container_name: telegram-receiver
+    restart: unless-stopped
+    environment:
+      - TELEGRAM_API_ID=${TELEGRAM_API_ID}
+      - TELEGRAM_API_HASH=${TELEGRAM_API_HASH}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - REDIS_URL=redis://trading-bot-redis:6379/0
+      - LOG_LEVEL=INFO
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./session_files:/app/session_files
+    networks:
+      - trading-network
+
+  # Signal Parser - Verarbeitet empfangene Signale  
+  signal-parser:
+    build:
+      context: .
+      dockerfile: Dockerfile.signal-parser
+    container_name: signal-parser
+    restart: unless-stopped
+    environment:
+      - REDIS_URL=redis://trading-bot-redis:6379/0
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+    networks:
+      - trading-network
+
+  # Signal Forwarder - Sendet Signale weiter
+  signal-forwarder:
+    build:
+      context: .
+      dockerfile: Dockerfile.signal-forwarder
+    container_name: signal-forwarder
+    restart: unless-stopped
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - OWN_GROUP_CHAT_ID=${OWN_GROUP_CHAT_ID}
+      - REDIS_URL=redis://trading-bot-redis:6379/0
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+    networks:
+      - trading-network
+
+  # Health Monitor & API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.api-gateway
+    container_name: api-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_URL=redis://trading-bot-redis:6379/0
+    depends_on:
+      - redis
+    networks:
+      - trading-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  trading-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local

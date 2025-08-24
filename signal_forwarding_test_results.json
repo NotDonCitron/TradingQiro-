@@ -1,0 +1,104 @@
+{
+  "vip_group": {
+    "accessible": true,
+    "title": "VIP Club",
+    "messages_count": 18,
+    "signals_found": 12,
+    "recent_messages": [
+      {
+        "id": 7778,
+        "text": "**🔔**** Spot Signals are not like futures signals — once the price moves, the entry is gone forever.**\n\nIf you want the same entries I’m taking in my personal wallet, you can’t hesitate.\nThe earlier y",
+        "date": "2025-08-24 14:16:01"
+      },
+      {
+        "id": 7777,
+        "text": "💸 `UMA/USDT`\n✅ Target #1 Done\n**Current profit: 50.0%**",
+        "date": "2025-08-24 13:05:39"
+      },
+      {
+        "id": 7776,
+        "text": "🌿 **How do I choose coins for my Spot Signals?** 🌱\n\n📊 On-chain data\n📊 Whale wallet monitoring\n📊 Macro market timing\n\nEvery spot pick I send is backed by real analysis — not random speculation.\nYou’re ",
+        "date": "2025-08-24 12:47:01"
+      },
+      {
+        "id": 7775,
+        "text": "💸 `FORTH/USDT`\n✅ Target #2 Done\n**Current profit: 20.0%**",
+        "date": "2025-08-24 12:34:25"
+      },
+      {
+        "id": 7774,
+        "text": "💸 `FORTH/USDT`\n✅ Target #1 Done\n**Current profit: 10.0%**",
+        "date": "2025-08-24 12:30:33"
+      }
+    ],
+    "forwarding_test": "success"
+  },
+  "cryptet_channel": {
+    "accessible": true,
+    "title": "CryptET",
+    "messages_count": 20,
+    "signals_found": 20,
+    "recent_messages": [
+      {
+        "id": 32174,
+        "text": "[TRX/USDT](https://cryptet.com/signals/one/trx_usdt/2025/08/24/1440?utm_campaign=notification&utm_medium=telegram)",
+        "date": "2025-08-24 14:39:06"
+      },
+      {
+        "id": 32173,
+        "text": "[LTC/USDT](https://cryptet.com/signals/one/ltc_usdt/2025/08/24/1415?utm_campaign=notification&utm_medium=telegram)",
+        "date": "2025-08-24 14:14:06"
+      },
+      {
+        "id": 32172,
+        "text": "[SOL/USDT](https://cryptet.com/signals/one/sol_usdt/2025/08/24/1308?utm_campaign=notification&utm_medium=telegram)",
+        "date": "2025-08-24 13:07:05"
+      },
+      {
+        "id": 32171,
+        "text": "[ETH/USDT](https://cryptet.com/signals/one/eth_usdt/2025/08/24/1226?utm_campaign=notification&utm_medium=telegram)",
+        "date": "2025-08-24 12:25:05"
+      },
+      {
+        "id": 32170,
+        "text": "[BTC/USDT](https://cryptet.com/signals/one/btc_usdt/2025/08/24/1208?utm_campaign=notification&utm_medium=telegram)",
+        "date": "2025-08-24 12:07:06"
+      }
+    ],
+    "forwarding_test": "success"
+  },
+  "target_group": {
+    "accessible": true,
+    "title": "PH FUTURES VIP",
+    "messages_count": 20,
+    "signals_found": 20,
+    "recent_messages": [
+      {
+        "id": 538,
+        "text": "Binance Futures, Bitget Futures\n#QTUM/USDT Take-Profit target 1 ✅\nProfit: 90.5923% 📈\nPeriod: 59 Minutes ⏰",
+        "date": "2025-08-24 14:50:42"
+      },
+      {
+        "id": 537,
+        "text": "⚠️ **SIGNAL EXTRACTION INCOMPLETE**\n\n📊 **Symbol:** TRX/USDT\n🔗 **Generated URL:** https://cryptet.com/signals/one/trx_usdt/2025/08/24\n\n⚠️ **Issue:** Could not extract full signal details\n🔧 **Action:** ",
+        "date": "2025-08-24 14:44:29"
+      },
+      {
+        "id": 536,
+        "text": "🤖 **CRYPTET SYMBOL DETECTED** 🤖\n\n📊 **Symbol:** TRXUSDT\n⚠️ **Signal Details:** Scraping in progress...\n\n⚡ **Action Required:**\n1. 🌐 Opening Cryptet page\n2. 📊 Extracting signal details\n3. 📤 Sending form",
+        "date": "2025-08-24 14:39:22"
+      },
+      {
+        "id": 535,
+        "text": "⚠️ **SIGNAL EXTRACTION INCOMPLETE**\n\n📊 **Symbol:** LTC/USDT\n🔗 **Generated URL:** https://cryptet.com/signals/one/ltc_usdt/2025/08/24\n\n⚠️ **Issue:** Could not extract full signal details\n🔧 **Action:** ",
+        "date": "2025-08-24 14:19:31"
+      },
+      {
+        "id": 534,
+        "text": "Binance Futures, Bitget Futures, ByBit USDT, KuCoin Futures, OKX Futures\n#T/USDT Entry 1 ✅\nAverage Entry Price: 0.01652 💵",
+        "date": "2025-08-24 14:16:17"
+      }
+    ],
+    "test_messages_sent": 2
+  }
+}

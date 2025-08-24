@@ -1,0 +1,64 @@
+# =============================================================================
+# PRODUCTION DOCKERFILE - 24/7 TRADING BOT
+# Optimiert für kontinuierlichen Betrieb ohne Debug-Nachrichten
+# =============================================================================
+
+FROM python:3.11-slim
+
+# Setze Production Environment
+ENV NODE_ENV=production
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Installiere System-Dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    wget \
+    curl \
+    gnupg \
+    unzip \
+    chromium \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/*
+
+# Erstelle App-Verzeichnis
+WORKDIR /app
+
+# Kopiere Requirements und installiere Dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Kopiere Anwendungscode
+COPY src/ src/
+COPY .env.production .env
+COPY cookies.txt .
+COPY alembic.ini .
+COPY alembic/ alembic/
+
+# Erstelle Log-Verzeichnis
+RUN mkdir -p logs
+
+# Production Environment Variables
+ENV LOG_LEVEL=ERROR
+ENV DEBUG=false
+ENV SIGNAL_DEBUG=false
+ENV ERROR_REPORTING=false
+ENV STATUS_MESSAGES=false
+ENV CRYPTET_HEADLESS=true
+ENV CHROMIUM_PATH=/usr/bin/chromium
+
+# Setze Benutzer (Security Best Practice)
+RUN useradd --create-home --shell /bin/bash app
+RUN chown -R app:app /app
+USER app
+
+# Health Check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Exponiere Port
+EXPOSE 8080
+
+# Startup Command - mit automatischem Restart bei Fehlern
+CMD ["python", "-u", "src/main.py"]

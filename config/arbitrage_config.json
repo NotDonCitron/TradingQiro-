@@ -1,0 +1,100 @@
+{
+  "arbitrage": {
+    "enabled": true,
+    "min_profit_threshold": 0.5,
+    "max_profit_threshold": 5.0,
+    "min_volume_threshold": 1000,
+    "scan_interval_seconds": 5,
+    "max_opportunity_age_seconds": 30,
+    "risk_limits": {
+      "max_single_trade_usd": 1000,
+      "max_daily_loss_usd": 5000,
+      "max_open_positions": 5
+    }
+  },
+  "exchanges": {
+    "binance": {
+      "enabled": true,
+      "api_key_env": "BINANCE_API_KEY",
+      "secret_key_env": "BINANCE_SECRET_KEY",
+      "testnet": true,
+      "rate_limit": 1200,
+      "fee_structure": {
+        "maker": 0.001,
+        "taker": 0.001
+      }
+    },
+    "coinbase": {
+      "enabled": true,
+      "api_key_env": "COINBASE_API_KEY",
+      "secret_key_env": "COINBASE_SECRET_KEY",
+      "sandbox": true,
+      "rate_limit": 100,
+      "fee_structure": {
+        "maker": 0.004,
+        "taker": 0.006
+      }
+    },
+    "kraken": {
+      "enabled": true,
+      "api_key_env": "KRAKEN_API_KEY",
+      "secret_key_env": "KRAKEN_SECRET_KEY",
+      "rate_limit": 1000,
+      "fee_structure": {
+        "maker": 0.0016,
+        "taker": 0.0026
+      }
+    },
+    "bingx": {
+      "enabled": true,
+      "api_key_env": "BINGX_API_KEY",
+      "secret_key_env": "BINGX_SECRET_KEY",
+      "testnet": true,
+      "rate_limit": 1000,
+      "fee_structure": {
+        "maker": 0.001,
+        "taker": 0.001
+      }
+    }
+  },
+  "firecrawl": {
+    "enabled": true,
+    "api_key_env": "FIRECRAWL_API_KEY",
+    "base_url": "https://api.firecrawl.com",
+    "rate_limit": 100,
+    "premium_sources": [
+      {
+        "name": "premium_telegram_groups",
+        "url_patterns": ["t.me/premium_*", "t.me/vip_*"],
+        "scrape_interval_minutes": 30
+      },
+      {
+        "name": "whale_tracking_sites",
+        "url_patterns": ["whale-alert.io", "whalestats.com"],
+        "scrape_interval_minutes": 5
+      }
+    ]
+  },
+  "whale_tracking": {
+    "enabled": true,
+    "min_transaction_usd": 100000,
+    "whale_addresses": [],
+    "tracking_exchanges": ["binance", "coinbase", "kraken"],
+    "alert_thresholds": {
+      "large_buy": 500000,
+      "large_sell": 500000,
+      "whale_movement": 1000000
+    }
+  },
+  "cache": {
+    "redis_url": "redis://localhost:6379",
+    "price_cache_ttl_seconds": 30,
+    "arbitrage_cache_ttl_seconds": 60,
+    "whale_cache_ttl_seconds": 300
+  },
+  "alerts": {
+    "telegram_alerts": true,
+    "min_profit_alert": 1.0,
+    "alert_channels": ["arbitrage_alerts", "whale_alerts", "premium_signals"]
+  }
+}

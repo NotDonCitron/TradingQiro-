@@ -1,0 +1,87 @@
+version: '3.8'
+
+# =============================================================================
+# DOCKER COMPOSE - 24/7 PRODUCTION TRADING BOT
+# Konfiguriert für kontinuierlichen Betrieb ohne Ausfälle
+# =============================================================================
+
+services:
+  trading-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: trading-bot-production
+    restart: unless-stopped
+    
+    # Environment Variablen für Production
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=ERROR
+      - DEBUG=false
+      - SIGNAL_DEBUG=false
+      - ERROR_REPORTING=false
+      - STATUS_MESSAGES=false
+      - CRYPTET_HEADLESS=true
+      - TRADING_ENABLED=false
+      - BINGX_TESTNET=true
+    
+    # Port Mapping - geändert auf 8082 um Konflikt mit api-gateway zu vermeiden
+    ports:
+      - "8082:8080"
+    
+    # Volume Mounts - für persistente Daten
+    volumes:
+      - ./logs:/app/logs
+      - ./cookies.txt:/app/cookies.txt
+      - ./session_files:/app/session_files
+      - ./.env.production:/app/.env
+    
+    # Health Check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource Limits (verhindert Memory-Leaks)
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
+    
+    # Logging Konfiguration (begrenzte Logs)
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Netzwerk für Monitoring (optional)
+    networks:
+      - trading-bot-network
+
+  # Optional: Monitoring mit Uptime Kuma oder ähnlich
+  # uptime-kuma:
+  #   image: louislam/uptime-kuma:1
+  #   container_name: uptime-kuma
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3001:3001"
+  #   volumes:
+  #     - uptime-kuma:/app/data
+  #   networks:
+  #     - trading-bot-network
+
+networks:
+  trading-bot-network:
+    driver: bridge
+
+# Volumes für persistente Daten
+volumes:
+  uptime-kuma:
+    driver: local
